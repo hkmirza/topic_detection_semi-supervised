@@ -1,6 +1,6 @@
 # Semi-Supervised Topic Detection 
 
-This repository contains a **reproducible implementation** of the semi-supervised topic detection pipeline. The pipeline integrates TF–IDF term similarity, **k-means** with **elbow-based** model selection, and **PLDA** (Partially Labeled LDA) with **per-document label constraints**. It outputs ranked topic–keyword lists, document–topic assignments, and evaluation metrics that match the reporting style used in the thesis (accuracy, precision, recall, F1; plus NPMI topic coherence).
+This repository contains a **reproducible implementation** of the semi-supervised topic detection pipeline. The pipeline integrates TF–IDF term similarity, **k-means** with **elbow-based** model selection, and **PLDA** (Partially Labeled LDA) with **per-document label constraints**. It outputs ranked topic–keyword lists, document–topic assignments, and evaluation metrics that match the reporting style used in the experiment (accuracy, precision, recall, F1; plus NPMI topic coherence).
 
 > **High-level flow:** Preprocess → TF–IDF → Elbow → k-means → seed lexicons → PLDA (with label constraints) → topics & assignments → evaluation & coherence.
 
@@ -10,7 +10,7 @@ This repository contains a **reproducible implementation** of the semi-supervise
 
 - **Unsupervised backbone:** TF–IDF + k-means with elbow selection (discrete curvature knee).
 - **Semi-supervised refinement:** PLDA constrained by partial labels (`label` column, optional) and seeded by cluster top-terms.
-- **Outputs aligned with thesis tables:**
+- **Outputs aligned with tables:**
   - Top-*N* keywords per topic 
   - Representative utterances per topic 
   - Document–topic distributions 
@@ -97,7 +97,7 @@ python semi_supervised_topic_detection.py \
 - `--kmin`, `--kmax`: candidate K range for elbow selection.
 - `--seed_terms`: number of top centroid-aligned terms to seed each topic.
 - `--topics`: number of PLDA topics. Use `auto` to set `T = K*` from elbow.
-- `--alpha`, `--beta`: symmetric Dirichlet priors (as per thesis defaults).
+- `--alpha`, `--beta`: symmetric Dirichlet priors (as per defaults).
 - `--gibbs_sweeps`: collapsed Gibbs sampling sweeps for PLDA (e.g., 1000).
 
 Run `python semi_supervised_topic_detection.py -h` for the full list of options.
@@ -108,7 +108,7 @@ Run `python semi_supervised_topic_detection.py -h` for the full list of options.
 
 All artifacts are written into `--outdir`:
 
-- `topics_top_keywords.csv` — per-topic ranked top-*N* keywords (as in thesis tables)
+- `topics_top_keywords.csv` — per-topic ranked top-*N* keywords (as in tables)
 - `topics_representative_utterances.csv` — top utterances per topic by θ
 - `theta_doc_topic.csv` — document–topic distribution (θ)
 - `phi_topic_word.csv` — topic–word distribution (φ)
@@ -119,7 +119,7 @@ All artifacts are written into `--outdir`:
 - `label_coverage.png` — diagnostic of partial-label coverage
 - `coherence_npmi.csv` — NPMI per topic (top-*N* words), averaged and individual scores
 
-You can directly import the CSVs to recreate the *per-topic keyword* tables that appear in the thesis.
+You can directly import the CSVs to recreate the *per-topic keyword* tables that appear in the experiment.
 
 ---
 
