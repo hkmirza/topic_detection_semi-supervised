@@ -11,13 +11,13 @@ This repository contains a **reproducible implementation** of the semi-supervise
 - **Unsupervised backbone:** TF–IDF + k-means with elbow selection (discrete curvature knee).
 - **Semi-supervised refinement:** PLDA constrained by partial labels (`label` column, optional) and seeded by cluster top-terms.
 - **Outputs aligned with thesis tables:**
-  - Top-*N* keywords per topic (CSV)
-  - Representative utterances per topic (CSV)
-  - Document–topic distributions (CSV)
-  - Topic–word distributions (CSV)
+  - Top-*N* keywords per topic
+  - Representative utterances per topic
+  - Document–topic distributions 
+  - Topic–word distributions 
   - Evaluation metrics (JSON): accuracy, precision, recall, F1 (macro/micro), and confusion matrix (PNG)
-  - **Topic coherence (NPMI)** per topic (CSV)
-  - Elbow plot and label-coverage diagnostics (PNGs)
+  - **Topic coherence (NPMI)** per topic 
+  - Elbow plot and label-coverage diagnostics 
 - **Reproducible**: fixed seeds, version-pinned `requirements.txt`, deterministic sklearn initialisation.
 
 ---
