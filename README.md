@@ -1,4 +1,102 @@
-Á
+# Semi-Supervised Topic Detection 
+
+This repository contains a **reproducible implementation** of the semi-supervised topic detection pipeline. The pipeline integrates TF–IDF term similarity, **k-means** with **elbow-based** model selection, and **PLDA** (Partially Labeled LDA) with **per-document label constraints**. It outputs ranked topic–keyword lists, document–topic assignments, and evaluation metrics that match the reporting style used in the thesis (accuracy, precision, recall, F1; plus NPMI topic coherence).
+
+> **High-level flow:** Preprocess → TF–IDF → Elbow → k-means → seed lexicons → PLDA (with label constraints) → topics & assignments → evaluation & coherence.
+
+---
+
+##  Features
+
+- **Unsupervised backbone:** TF–IDF + k-means with elbow selection (discrete curvature knee).
+- **Semi-supervised refinement:** PLDA constrained by partial labels (`label` column, optional) and seeded by cluster top-terms.
+- **Outputs aligned with thesis tables:**
+  - Top-*N* keywords per topic 
+  - Representative utterances per topic 
+  - Document–topic distributions 
+  - Topic–word distributions 
+  - Evaluation metrics (JSON): accuracy, precision, recall, F1 (macro/micro), and confusion matrix (PNG)
+  - **Topic coherence (NPMI)** per topic 
+  - Elbow plot and label-coverage diagnostics 
+- **Reproducible**: fixed seeds, version-pinned `requirements.txt`, deterministic sklearn initialisation.
+
+---
+
+##  Installation
+
+###  Create and activate a virtual environment (recommended)
+
+```bash
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+```
+
+###  Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Download NLTK resources (first run only)
+
+```bash
+python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
+```
+
+> If you are behind a proxy/firewall, set your proxy env vars or download these once and cache.
+
+---
+
+## Data Format
+
+Provide a single CSV file with the following columns:
+
+| column         | required | description                                                                 |
+|----------------|----------|-----------------------------------------------------------------------------|
+| `dialogue_id`  | ✓        | Conversation/session identifier                                             |
+| `utterance`    | ✓        | Single utterance text (one row per utterance)                               |
+| `label`        | ✗        | Optional **partial** topic label (string). Leave empty for unlabeled rows.  |
+
+**Notes**
+
+- Multiple datasets (e.g., Switchboard, PersonaChat, MultiWOZ) can be processed separately by calling the script per dataset.
+- Keep labels **consistent** (e.g., `travel`, `food`, `hotel`). The PLDA stage constrains topics only for documents with observed labels.
+- If no labels are present, the pipeline still runs; PLDA will behave like LDA with seeding.
+
+---
+
+##  Usage
+
+###  Basic run
+
+```bash
+python semi_supervised_topic_detection.py \
+  --data path/to/dataset.csv \
+  --outdir outputs/exp1_switchboard \
+  --ngram 1 2 \
+  --min_df 5 \
+  --max_df 0.95 \
+  --kmin 5 \
+  --kmax 60 \
+  --seed_terms 10 \
+  --topics auto \
+  --alpha 0.5 \
+  --beta 0.1 \
+  --gibbs_sweeps 1000
+```
+
+###  Important arguments
+
+- `--data`: path to the CSV (see *Data Format*).
+- `--outdir`: directory for all outputs and figures.
+- `--ngram`: n-gram range for TF–IDF (default `1 2`).
+- `--min_df`, `--max_df`: vocabulary pruning thresholds.
+- `--kmin`, `--kmax`: candidate K range for elbow selection.
+- `--seed_terms`: number of top centroid-aligned terms to seed each topic.
+- `--topics`: number of PLDA topics. Use `auto` to set `T = K*` from elbow.
 - `--alpha`, `--beta`: symmetric Dirichlet priors (as per thesis defaults).
 - `--gibbs_sweeps`: collapsed Gibbs sampling sweeps for PLDA (e.g., 1000).
 
@@ -32,41 +130,21 @@ You can directly import the CSVs to recreate the *per-topic keyword* tables that
 - Version-pinned dependencies in `requirements.txt`.
 - Exported configs: the script writes the resolved CLI args to `run_config.yaml` inside `--outdir`.
 
-To **fully reproduce** the thesis tables/figures, run the script separately for each dataset (Switchboard, PersonaChat, MultiWOZ) using the same preprocessing thresholds and the default priors `α=0.5, β=0.1`, `gibbs_sweeps=1000`, and `seed_terms=10`.
+To **fully reproduce**  run the script separately for each dataset (Switchboard, PersonaChat, MultiWOZ) using the same preprocessing thresholds and the default priors `α=0.5, β=0.1`, `gibbs_sweeps=1000`, and `seed_terms=10`.
 
 ---
 
-## Example: PersonaChat
 
-```bash
-python semi_supervised_topic_detection.py \
-  --data data/personachat.csv \
-  --outdir outputs/personachat_semisup \
-  --ngram 1 2 \
-  --min_df 5 --max_df 0.95 \
-  --kmin 5 --kmax 60 \
-  --seed_terms 10 \
-  --topics auto \
-  --alpha 0.5 --beta 0.1 \
-  --gibbs_sweeps 1000
-```
-
-Inspect `outputs/personachat_semisup/topics_top_keywords.csv` to view the topic tables and `coherence_npmi.csv` for coherence.
-
----
-
-## Troubleshooting
+##  Troubleshooting
 
 - **No knee detected:** tighten/expand `--kmin/--kmax`, or increase TF–IDF granularity (use `--ngram 1 2`, lower `min_df` slightly).
 - **Sparse labels (semi-supervision ineffective):** ensure `label` values are consistent and present for a meaningful subset of rows.
 - **Low NPMI:** increase `seed_terms` modestly (e.g., 15) or raise `gibbs_sweeps`.
 - **Memory issues:** reduce vocabulary via higher `min_df` and/or lower `max_df`.
 
----
-
 
 ---
 
-## License
+##  License
 
 Specify a license (e.g., Apache) in `LICENSE` if you plan to release the repository publicly.
