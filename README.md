@@ -1,4 +1,4 @@
-# Semi-Supervised Topic Detection (Term Similarity → k-means (Elbow) → PLDA with Label Constraints)
+# Semi-Supervised Topic Detection 
 
 This repository contains a **reproducible implementation** of the semi-supervised topic detection pipeline. The pipeline integrates TF–IDF term similarity, **k-means** with **elbow-based** model selection, and **PLDA** (Partially Labeled LDA) with **per-document label constraints**. It outputs ranked topic–keyword lists, document–topic assignments, and evaluation metrics that match the reporting style used in the thesis (accuracy, precision, recall, F1; plus NPMI topic coherence).
 
