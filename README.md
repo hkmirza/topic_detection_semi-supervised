@@ -1,12 +1,12 @@
 # Semi-Supervised Topic Detection (Term Similarity → k-means (Elbow) → PLDA with Label Constraints)
 
-This repository contains a **reproducible implementation** of the semi-supervised topic detection pipeline described in your thesis (Chapter 5). The pipeline integrates TF–IDF term similarity, **k-means** with **elbow-based** model selection, and **PLDA** (Partially Labeled LDA) with **per-document label constraints**. It outputs ranked topic–keyword lists, document–topic assignments, and evaluation metrics that match the reporting style used in the thesis (accuracy, precision, recall, F1; plus NPMI topic coherence).
+This repository contains a **reproducible implementation** of the semi-supervised topic detection pipeline. The pipeline integrates TF–IDF term similarity, **k-means** with **elbow-based** model selection, and **PLDA** (Partially Labeled LDA) with **per-document label constraints**. It outputs ranked topic–keyword lists, document–topic assignments, and evaluation metrics that match the reporting style used in the thesis (accuracy, precision, recall, F1; plus NPMI topic coherence).
 
 > **High-level flow:** Preprocess → TF–IDF → Elbow → k-means → seed lexicons → PLDA (with label constraints) → topics & assignments → evaluation & coherence.
 
 ---
 
-## 1) Features
+##  Features
 
 - **Unsupervised backbone:** TF–IDF + k-means with elbow selection (discrete curvature knee).
 - **Semi-supervised refinement:** PLDA constrained by partial labels (`label` column, optional) and seeded by cluster top-terms.
@@ -22,9 +22,9 @@ This repository contains a **reproducible implementation** of the semi-supervise
 
 ---
 
-## 2) Installation
+##  Installation
 
-### 2.1. Create and activate a virtual environment (recommended)
+###  Create and activate a virtual environment (recommended)
 
 ```bash
 python -m venv .venv
@@ -34,13 +34,13 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 2.2. Install dependencies
+###  Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2.3. Download NLTK resources (first run only)
+###  Download NLTK resources (first run only)
 
 ```bash
 python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
@@ -50,7 +50,7 @@ python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
 
 ---
 
-## 3) Data Format
+##  Data Format
 
 Provide a single CSV file with the following columns:
 
@@ -68,9 +68,9 @@ Provide a single CSV file with the following columns:
 
 ---
 
-## 4) Usage
+##  Usage
 
-### 4.1. Basic run
+###  Basic run
 
 ```bash
 python semi_supervised_topic_detection.py \
@@ -88,7 +88,7 @@ python semi_supervised_topic_detection.py \
   --gibbs_sweeps 1000
 ```
 
-### 4.2. Important arguments
+###  Important arguments
 
 - `--data`: path to the CSV (see *Data Format*).
 - `--outdir`: directory for all outputs and figures.
@@ -104,7 +104,7 @@ Run `python semi_supervised_topic_detection.py -h` for the full list of options.
 
 ---
 
-## 5) Outputs
+## Outputs
 
 All artifacts are written into `--outdir`:
 
@@ -123,7 +123,7 @@ You can directly import the CSVs to recreate the *per-topic keyword* tables that
 
 ---
 
-## 6) Reproducibility
+## Reproducibility
 
 - Deterministic initialisation for k-means (`k-means++` with fixed `random_state` and `n_init`).
 - Fixed RNG seeds across NumPy, Python, and scikit-learn.
@@ -134,7 +134,7 @@ To **fully reproduce** the thesis tables/figures, run the script separately for 
 
 ---
 
-## 7) Example: PersonaChat
+## Example: PersonaChat
 
 ```bash
 python semi_supervised_topic_detection.py \
@@ -153,7 +153,7 @@ Inspect `outputs/personachat_semisup/topics_top_keywords.csv` to view the topic 
 
 ---
 
-## 8) Troubleshooting
+## Troubleshooting
 
 - **No knee detected:** tighten/expand `--kmin/--kmax`, or increase TF–IDF granularity (use `--ngram 1 2`, lower `min_df` slightly).
 - **Sparse labels (semi-supervision ineffective):** ensure `label` values are consistent and present for a meaningful subset of rows.
@@ -162,15 +162,9 @@ Inspect `outputs/personachat_semisup/topics_top_keywords.csv` to view the topic 
 
 ---
 
-## 9) Citation
-
-If you use this code in academic work, please cite the thesis chapter that introduced the method and the core PLDA work:
-
-- Ramage, D., Hall, D., Nallapati, R., & Manning, C. D. (2011). *Labeled LDA: A supervised topic model for credit attribution in multi-labeled corpora.*
-- (Your Thesis) Chapter 5: Semi-supervised Topic Detection (provide full BibTeX in your repository).
 
 ---
 
-## 10) License
+## License
 
-Specify a license (e.g., MIT) in `LICENSE` if you plan to release the repository publicly.
+Specify a license (e.g., Apache) in `LICENSE` if you plan to release the repository publicly.
